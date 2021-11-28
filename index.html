@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+	<meta charset="utf-8">
+	<title>PONG</title>
+</head>
+
+<body>
+
+<canvas id="canvas" width="700" height="500"></canvas>
+<p> Utilisez les touches Z et S pour déplacer la raquette rouge<br>
+Et les flèches Haut et Bas pour la verte.</p>
+<style>
+*{ 
+padding: 0;
+margin: 0;
+}
+
+p{
+font-size : 45px;
+text-align : center;
+}
+
+canvas{
+background-color : black;
+display: block; 
+margin: 0 auto;
+}
+</style>
+
+<script>
+// Obtenir une référence au canvas
+var canvas = document.getElementById("canvas");
+var ctx = canvas.getContext("2d");
+
+const explosion = new Audio('sons/coup.mp3');
+
+// Placement initial Ball
+var BallRayon = 10;
+var x = canvas.width/2;
+var y = Math.floor(Math.random() * 400)+50;
+
+// paramètre de la raquette1
+var RaquetteHeight = 10;
+var RaquetteWidth = 75;
+var RaquetteY = (canvas.height - RaquetteWidth)/2;
+var RaquetteY1 = (canvas.height - RaquetteWidth)/2;
+
+//Score
+var score1 = 0;
+
+//vitesse de déplacement
+var dx = 1;
+var dy = -1;
+
+// vitesse des raquettes
+var v =3;
+var v1 =3;
+
+//Initialiser les touches haut et bas Raquette2
+var downPressed = false;
+var upPressed = false;
+
+// Initialiser touches haut et bas Raquette1
+var sPressed = false;
+var zPressed = false;
+
+// Event Listener
+document.addEventListener("keydown", keyDownHandler, false);
+document.addEventListener("keyup", keyUpHandler, false);
+
+// Event Listener Raquette1
+document.addEventListener("keydown", keyDownHandler1, false);
+document.addEventListener("keyup", keyUpHandler1, false);
+
+function keyDownHandler(e) {
+    if(e.key == "Down" || e.key == "ArrowDown") {
+        downPressed = true;
+    }
+    else if(e.key == "Up" || e.key == "ArrowUp") {
+        upPressed = true;
+    }
+}
+
+function keyUpHandler(e) {
+    if(e.key == "Down" || e.key == "ArrowDown") {
+        downPressed = false;
+    }
+    else if(e.key == "Up" || e.key == "ArrowUp") {
+        upPressed = false;
+    }
+}
+
+function keyDownHandler1(a) {
+    if(a.key == "z" || a.key == "Z") {
+        zPressed = true;
+    }
+    else if(a.key == "s" || a.key == "S") {
+        sPressed = true;
+    }
+}
+
+function keyUpHandler1(a) {
+    if(a.key == "z" || a.key == "Z") {
+        zPressed = false;
+    }
+    else if(a.key == "s" || a.key == "S") {
+        sPressed = false;
+    }
+}
+
+function drawScore1(){
+ctx.font = "16px Arial";
+ctx.fillText("Score: "+score1, 8, 20);
+}
+
+function drawBall(){
+ctx.beginPath();
+ctx.arc(x, y, BallRayon, 0, Math.PI*2, true);
+ctx.fillStyle = "blue";
+ctx.fill();
+ctx.closePath();
+}
+
+function drawLine(){
+ctx.beginPath();
+ctx.rect(canvas.width/2, 0, 1, canvas.height);
+ctx.fillStyle = "white";
+ctx.fill();
+ctx.closePath();
+}
+
+function drawRaquette1(){
+ctx.beginPath();
+ctx.rect(0, RaquetteY1, RaquetteHeight, RaquetteWidth);
+ctx.fillStyle = "red";
+ctx.fill();
+ctx.closePath();
+}
+
+function drawRaquette2(){
+ctx.beginPath();
+ctx.rect(canvas.width - RaquetteHeight, RaquetteY, RaquetteHeight, RaquetteWidth);
+ctx.fillStyle = "green";
+ctx.fill();
+ctx.closePath();
+}
+
+function draw(){
+ctx.clearRect(0, 0, canvas.width, canvas.height);// Permet de supprimer un rectangle dans canvas
+drawBall();
+drawLine();
+drawScore1();
+drawRaquette1();
+drawRaquette2();
+x+=dx;
+y+=dy;
+
+	if( x > canvas.width - BallRayon || x < 0 + BallRayon){
+		if((y > RaquetteY && y < RaquetteY + RaquetteWidth) || (y > RaquetteY1 && y < RaquetteY1 + RaquetteWidth) ){
+			dx = (-dx)*1.2;
+			v1*=1.1;
+			v*=1.1;
+			score1++;
+			explosion.play();
+			}
+			
+			else{
+					alert=("GAME OVER !");
+					document.location.reload();
+					clearInterval(interval);
+				}
+		}
+		
+	
+	if( y > canvas.height - BallRayon || y < 0 + BallRayon){
+		dy = -dy;
+	}
+	
+	if(upPressed){
+			RaquetteY-=v;
+			if(RaquetteY < 0){
+				RaquetteY = 0;
+			}
+	}
+	if(downPressed){
+			RaquetteY+=v;
+			if(RaquetteY > canvas.height - RaquetteWidth){
+				RaquetteY = canvas.height - RaquetteWidth;
+			}
+	}
+	
+	if(zPressed){
+			RaquetteY1-=v1;
+			if(RaquetteY1 < 0){
+				RaquetteY1 = 0;
+			}
+	}
+	if(sPressed){
+			RaquetteY1+=v1;
+			if(RaquetteY1 > canvas.height - RaquetteWidth){
+				RaquetteY1 = canvas.height - RaquetteWidth;
+			}
+			
+	}
+}
+
+var interval = setInterval(draw, 5); // permet de répeter la fonction draw en boucle toutes les 5ms.
+</script>
+
+</body>
+</html>
